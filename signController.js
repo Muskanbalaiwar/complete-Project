@@ -1,14 +1,24 @@
 const User=require('../models/signData');
 
+const bcrypt=require('bcrypt')
+
 exports.postData=async(req,res,next)=>{
   try{
     const name=req.body._Name;
     const email=req.body._Email
     const password=req.body._Password
     console.log(' hello data');
-
-    const data=await User.create({name:name,email:email,password:password})
-    res.status(201).json({details:data});}
+    
+    const salt=10;
+    bcrypt.hash(password,salt,async (err,hash)=>{
+      console.log(err);
+      console.log('hash')
+      const data=await User.create({name:name,email:email,password:hash})
+      console.log('answer')
+    res.status(201).json({details:data})
+    })
+    //res.redirect('/login/post')
+    }
     catch(err){
         res.status(500).json({error:err})
     }
@@ -25,12 +35,16 @@ console.log(email);
   })
   console.log('user');
   if(user.length>0){
-    if(user[0].password===password){
-      res.status(200).json({success:true,message:'login seccessfully'})
+   bcrypt.compare(password,user[0].password, (err,result)=>{
+    if(err){
+      throw new Error('Something went wrong');
     }
+    if(result===true){res.status(200).json({success:true,message:'login seccessfully'})}
+
     else{
       res.status(400).json({success:false,message:'password is incorrect'})
     }
+   }) 
   }
   else{
     res.status(404).json({success:false,message:'User not exist'})
