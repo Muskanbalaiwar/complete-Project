@@ -8,20 +8,22 @@ form.addEventListener('submit',addData);
 
 function addData(e){
     e.preventDefault();
-    console.log('data added')
+    //console.log('data added')
     const user={
         _Name:e.target.Name.value,
         _Email:e.target.Email.value,
         _Password:e.target.Password.value
     }
-    console.log('data added')
+    //console.log('data added')
 
     axios
     .post("http://localhost:3001/sign/post",user)
    .then(res =>{
-    console.log(('data added'))
+    alert('sign in success')
+    console.log((res.data.details))
 })
-   .catch(err=>console.log(err));
+   .catch(err=>{console.log(err);}
+   );
 
     form.reset();
 
