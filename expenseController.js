@@ -7,7 +7,8 @@ exports.postData=async(req,res,next)=>{
     const category=req.body.crt;
     //console.log(amount);
 
-    const data=await User.create({amount:amount,description:des,category:category})
+    const data=await User.create({amount:amount,description:des,category:category,datumId:req.user.id})
+   
     res.status(201).json({details:data});}
     catch(err){
         console.log(err);
@@ -16,7 +17,8 @@ exports.postData=async(req,res,next)=>{
 
 exports.getAll=async(req,res,next)=>{
 try{
-    const data=await User.findAll();
+    const data=await User.findAll({where:{datumId:req.user.id}});
+    console.log("data "+data)
     res.status(201).json({details:data});}
 
     catch(err){console.log(err)}
@@ -25,7 +27,7 @@ try{
 exports.delete=async(req,res,next)=>{
     try{
     const id=req.params.id;
-    await User.destroy({where :{id:id}});
+    await User.destroy({where :{id:id,datumId:req.user.id}});
     res.sendStatus(201);}
     catch(err){console.log(err)}
   }

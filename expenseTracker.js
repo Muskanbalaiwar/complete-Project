@@ -15,10 +15,13 @@ function addItem(e) {
         amn: e.target.amt.value,    
         dec: e.target.dsc.value,
         crt: e.target.ctg.value,
-       
+        
     }
+
+    const token=localStorage.getItem('token')
+
     axios
-    .post("http://localhost:3001/user/post",user)
+    .post("http://localhost:3001/user/post",user,{headers:{'Authorization':token}})
    .then(res =>{
     console.log(('data added'))
     showData((res.data.details))
@@ -36,8 +39,9 @@ function removeItem(e) {
             var li = e.target.parentElement;
             
             console.log(li.id);
+            const token=localStorage.getItem('token')
             axios
-    .delete(`http://localhost:3001/user/deleteData/${li.id}`)
+    .delete(`http://localhost:3001/user/deleteData/${li.id}`,{headers:{'Authorization':token}})
     .then(res=>{console.log('data deleted');
         itemList.removeChild(li)})
     .catch(err=>console.log(err));
@@ -73,19 +77,23 @@ function editItem(e) {
 }
 
 window.addEventListener("DOMContentLoaded",()=>{
+    
+    const token=localStorage.getItem('token')
     axios
-    .get("http://localhost:3001/user/getData")
+    .get("http://localhost:3001/user/getData",{headers:{'Authorization':token}})
 .then((res)=>{
-    //console.log("res dtaa"+JSON.stringify(res.data.details[1].id));
+    console.log('hello')
+    console.log("res dtaa"+JSON.stringify(res.data.details));
     for(var i=0;i<res.data.details.length;i++){
         //console.log("res dtaa"+JSON.stringify(res.data.details[i].id));
        showData(res.data.details[i])
     }
 })
-.catch(err=>console.log(err));})
+//.catch(err=>console.log(err));
+})
 
 function showData(e){
-
+    //e.preventDefault();
     var newItem = e.amount;
     var newDes = e.description;
     var newCat =e.category;
@@ -103,6 +111,12 @@ function showData(e){
     btnEdit.appendChild(document.createTextNode('Edit Details'));
     li.appendChild(btnEdit);
     itemList.append(li);
-
-
 }
+
+// document.getElementById('razorButton').onclick= async function(e){
+//     const token=localStorage.getItem('token');
+//     const response=axios.get("http://localhost:3001/premium/get",{headers:{"Authorization":token}})
+//     console.log(response)
+// }
+
+
