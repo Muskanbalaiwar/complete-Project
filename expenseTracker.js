@@ -94,7 +94,9 @@ window.addEventListener("DOMContentLoaded",()=>{
        showData(res.data.details[i])
     }
 })
-//.catch(err=>console.log(err));
+.catch(err=>console.log(err));
+
+
 })
 
 function showData(e){
@@ -111,10 +113,6 @@ function showData(e){
     deleteBtn.className = 'btn btn-danger exteme-right delete';
     deleteBtn.appendChild(document.createTextNode('Delete'));
     li.appendChild(deleteBtn);
-    var btnEdit = document.createElement('button');
-    btnEdit.className = 'btn btn-primary float-end edit';
-    btnEdit.appendChild(document.createTextNode('Edit Details'));
-    li.appendChild(btnEdit);
     itemList.append(li);
 }
 
@@ -143,7 +141,7 @@ leader.setAttribute("value","Show Leaderboard")
 leader.className = 'btn btn-primary float-end show';
 leader.id="leader_id";
 h3.append(leader)
-
+window.stop();
         }
     };
     const rzp=new Razorpay(options);
@@ -157,23 +155,27 @@ h3.append(leader)
 }
 
 
-h3.innerHTML+='You are a premimum user now';
-var leader=document.createElement('input');
-leader.setAttribute("type","button");
-leader.setAttribute("value","Show Leaderboard")
-leader.className = 'btn btn-primary float-end show';
-leader.id="leader_id";
-h3.append(leader)
 
-var Leaderboard=document.getElementById('leader_id');
-console.log(Leaderboard.nodeType)
-h3.addEventListener('onclick',showBoard);
 
-function showBoard(e){
+h3.addEventListener('click',showBoard);
+
+async function showBoard(e){
 
     if (e.target.classList.contains('show')){
-    e.preventDefault();
-    console.log("leaderboard");}
+        const token=localStorage.getItem('token');
+        const boardData=await axios.get("http://localhost:3001/premium/showBoard",{headers:{"Authorization":token}})
+      document.body.innerHTML+='<h2>LeaderBoard</h2><br>';
+
+      boardData.data.forEach((details)=>{
+        if(details.total===undefined)
+        {
+        document.body.innerHTML+=`<li>Name ${details.name} total Expenses 0`;}
+        else{
+            document.body.innerHTML+=`<li>Name ${details.name} total Expenses ${details.total}`;
+        }
+      })
+        
+    }
 }
 
 
