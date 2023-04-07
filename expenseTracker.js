@@ -1,12 +1,17 @@
+//const Razorpay = require('razorpay');
+
 console.log(1);
 var form = document.getElementById('addValue');
 var itemList = document.getElementById('items');
 var amount = document.getElementById('amount');
+var h3=document.getElementById('h3');
 var disc = document.getElementById('des');
 var catg = document.getElementById('cat');
 form.addEventListener('submit', addItem);
 itemList.addEventListener('click', removeItem);
 itemList.addEventListener('click', editItem);
+
+
 
 function addItem(e) {
     e.preventDefault();
@@ -83,7 +88,7 @@ window.addEventListener("DOMContentLoaded",()=>{
     .get("http://localhost:3001/user/getData",{headers:{'Authorization':token}})
 .then((res)=>{
     console.log('hello')
-    console.log("res dtaa"+JSON.stringify(res.data.details));
+    //console.log("res dtaa"+JSON.stringify(res.data.details));
     for(var i=0;i<res.data.details.length;i++){
         //console.log("res dtaa"+JSON.stringify(res.data.details[i].id));
        showData(res.data.details[i])
@@ -113,10 +118,62 @@ function showData(e){
     itemList.append(li);
 }
 
-// document.getElementById('razorButton').onclick= async function(e){
-//     const token=localStorage.getItem('token');
-//     const response=axios.get("http://localhost:3001/premium/get",{headers:{"Authorization":token}})
-//     console.log(response)
-// }
+document.getElementById('razorButton').onclick= async function(e){
+   
+    const token=localStorage.getItem('token');
+    console.log('token :'+token);
+  
+   const response=await  axios.get("http://localhost:3001/premium/get",{headers:{"Authorization":token}})
+    //console.log("rsponse : "+response.data.order.id)
+    var options ={
+        "key":response.data.key_id,
+        "order_id":response.data.order.id,
+
+        "handler":async function(response){
+            await axios.post("http://localhost:3001/premium/post",{
+                order_id:options.order_id,
+                payment_id:response.razorpay_payment_id,
+            },{headers:{"Authorization":token}})
+            alert('you are premium member now');
+            razorButton.style.visibility='hidden';
+            h3.innerHTML+='You are a premimum user now';
+var leader=document.createElement('input');
+leader.setAttribute("type","button");
+leader.setAttribute("value","Show Leaderboard")
+leader.className = 'btn btn-primary float-end show';
+leader.id="leader_id";
+h3.append(leader)
+
+        }
+    };
+    const rzp=new Razorpay(options);
+    rzp.open();
+    e.preventDefault();
+
+    rzp.on('payment.failed',function(response){
+        console.log(response);
+        alert('something went wrong');
+    })
+}
+
+
+h3.innerHTML+='You are a premimum user now';
+var leader=document.createElement('input');
+leader.setAttribute("type","button");
+leader.setAttribute("value","Show Leaderboard")
+leader.className = 'btn btn-primary float-end show';
+leader.id="leader_id";
+h3.append(leader)
+
+var Leaderboard=document.getElementById('leader_id');
+console.log(Leaderboard.nodeType)
+h3.addEventListener('onclick',showBoard);
+
+function showBoard(e){
+
+    if (e.target.classList.contains('show')){
+    e.preventDefault();
+    console.log("leaderboard");}
+}
 
 
