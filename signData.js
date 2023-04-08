@@ -24,6 +24,12 @@ const Data = sequelize.define('data', {
    allowNull:false,
    
   },
+
+  ispremium:Sequelize.BOOLEAN,
+  totalExpense:{
+    type:Sequelize.STRING,
+    defaultValue:0
+  }
 });
 
 module.exports = Data;

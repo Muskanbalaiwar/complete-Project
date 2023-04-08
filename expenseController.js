@@ -1,14 +1,18 @@
 const User=require('../models/user');
-
+const sign=require('../models/signData');
 exports.postData=async(req,res,next)=>{
   try{
     const amount=req.body.amn;
     const des=req.body.dec;
     const category=req.body.crt;
-    //console.log(amount);
-
     const data=await User.create({amount:amount,description:des,category:category,datumId:req.user.id})
-   
+const total=Number(req.user. totalExpense)+Number(amount);
+    await sign.update({
+      totalExpense: total
+},{where:{id:req.user.id}}
+
+)
+  
     res.status(201).json({details:data});}
     catch(err){
         console.log(err);
@@ -16,9 +20,10 @@ exports.postData=async(req,res,next)=>{
 }
 
 exports.getAll=async(req,res,next)=>{
-try{
+try{console.log(~~parseInt(User.amount));
+  //const amount=req.body.amn;
     const data=await User.findAll({where:{datumId:req.user.id}});
-    console.log("data "+data)
+    //console.log("data "+data)
     res.status(201).json({details:data});}
 
     catch(err){console.log(err)}
@@ -27,7 +32,19 @@ try{
 exports.delete=async(req,res,next)=>{
     try{
     const id=req.params.id;
+   
+    const data=await User.findByPk(id);
+
+    console.log("data>>>>>>>>>>>>>>>"+data.amount);
+    
+   const total=Number(req.user.totalExpense)-Number(data.amount);
+    await sign.update({
+      totalExpense: total
+},{where:{id:req.user.id}}
+
+)
     await User.destroy({where :{id:id,datumId:req.user.id}});
+   
     res.sendStatus(201);}
     catch(err){console.log(err)}
   }
