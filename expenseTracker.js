@@ -9,7 +9,7 @@ var disc = document.getElementById('des');
 var catg = document.getElementById('cat');
 form.addEventListener('submit', addItem);
 itemList.addEventListener('click', removeItem);
-itemList.addEventListener('click', editItem);
+//itemList.addEventListener('click', editItem);
 
 
 
@@ -56,30 +56,30 @@ function removeItem(e) {
     }
 }
 
-function editItem(e) {
-    if (e.target.classList.contains('edit')) {
-        if (confirm('Are You sure?')) {
-             var editingId = e.target.parentElement;
-             console.log(editingId.id);
-             axios
-             .get(`http://localhost:3001/user/getData/${editingId.id}`)
-             .then((res) =>{
-                console.log('data editing in process')
-                amount.value=res.data.details.amount,
-                disc.value=res.data.details.description,
-                catg.value=res.data.details.category
-            })
-                .catch(err=>console.log(err))
+// function editItem(e) {
+//     if (e.target.classList.contains('edit')) {
+//         if (confirm('Are You sure?')) {
+//              var editingId = e.target.parentElement;
+//              console.log(editingId.id);
+//              axios
+//              .get(`http://localhost:3001/user/getData/${editingId.id}`)
+//              .then((res) =>{
+//                 console.log('data editing in process')
+//                 amount.value=res.data.details.amount,
+//                 disc.value=res.data.details.description,
+//                 catg.value=res.data.details.category
+//             })
+//                 .catch(err=>console.log(err))
 
-                axios
-             .delete(`http://localhost:3001/user/deleteData/${editingId.id}`)
-           // item = JSON.parse(localStorage.getItem(editingId));
-            //console.log(editingId);
-            .then(res=> itemList.removeChild(editingId))
-        }
-    }
+//                 axios
+//              .delete(`http://localhost:3001/user/deleteData/${editingId.id}`)
+//            // item = JSON.parse(localStorage.getItem(editingId));
+//             //console.log(editingId);
+//             .then(res=> itemList.removeChild(editingId))
+//         }
+//     }
 
-}
+// }
 
 window.addEventListener("DOMContentLoaded",()=>{
     
@@ -110,19 +110,15 @@ function showData(e){
     li.className = 'list-group-item';
     li.appendChild(document.createTextNode(newItem + " " + newDes + " " + newCat));
     var deleteBtn = document.createElement('button');
-    deleteBtn.className = 'btn btn-danger exteme-right delete';
+    deleteBtn.className = 'btn btn-danger float-end delete';
     deleteBtn.appendChild(document.createTextNode('Delete'));
     li.appendChild(deleteBtn);
     itemList.append(li);
 }
 
 document.getElementById('razorButton').onclick= async function(e){
-   
-    const token=localStorage.getItem('token');
-    console.log('token :'+token);
-  
-   const response=await  axios.get("http://localhost:3001/premium/get",{headers:{"Authorization":token}})
-    //console.log("rsponse : "+response.data.order.id)
+ const token=localStorage.getItem('token');
+  const response=await  axios.get("http://localhost:3001/premium/get",{headers:{"Authorization":token}})
     var options ={
         "key":response.data.key_id,
         "order_id":response.data.order.id,
@@ -141,7 +137,7 @@ leader.setAttribute("value","Show Leaderboard")
 leader.className = 'btn btn-primary float-end show';
 leader.id="leader_id";
 h3.append(leader)
-window.stop();
+
         }
     };
     const rzp=new Razorpay(options);
@@ -154,6 +150,14 @@ window.stop();
     })
 }
 
+//razorButton.style.visibility='hidden';
+h3.innerHTML+='You are a premimum user now';
+var leader=document.createElement('input');
+leader.setAttribute("type","button");
+leader.setAttribute("value","Show Leaderboard")
+leader.className = 'btn btn-primary float-end show';
+leader.id="leader_id";
+h3.append(leader)
 
 
 
@@ -167,7 +171,7 @@ async function showBoard(e){
       document.body.innerHTML+='<h2>LeaderBoard</h2><br>';
 
       boardData.data.forEach((details)=>{
-        if(details.total===undefined)
+        if(details.total===null)
         {
         document.body.innerHTML+=`<li>Name ${details.name} total Expenses 0`;}
         else{
