@@ -1,20 +1,27 @@
 const User=require('../models/user');
 const sign=require('../models/signData');
+const sequelize=require('../util/database');
 exports.postData=async(req,res,next)=>{
+  
+  const t=await sequelize.transaction();
   try{
     const amount=req.body.amn;
     const des=req.body.dec;
     const category=req.body.crt;
-    const data=await User.create({amount:amount,description:des,category:category,datumId:req.user.id})
+    const data=await User.create({amount:amount,description:des,category:category,datumId:req.user.id,},{transaction:t})
 const total=Number(req.user. totalExpense)+Number(amount);
     await sign.update({
       totalExpense: total
-},{where:{id:req.user.id}}
+},{where:{id:req.user.id},
+transaction:t
+}
 
-)
-  
+) 
+
+await t.commit();
     res.status(201).json({details:data});}
     catch(err){
+      await t.rollback();
         console.log(err);
     }
 }
@@ -30,23 +37,24 @@ try{console.log(~~parseInt(User.amount));
 }
 
 exports.delete=async(req,res,next)=>{
+  
+  const t=await sequelize.transaction();
     try{
+
     const id=req.params.id;
    
     const data=await User.findByPk(id);
-
-    console.log("data>>>>>>>>>>>>>>>"+data.amount);
-    
    const total=Number(req.user.totalExpense)-Number(data.amount);
     await sign.update({
       totalExpense: total
-},{where:{id:req.user.id}}
+},{where:{id:req.user.id},transaction:t}
 
 )
-    await User.destroy({where :{id:id,datumId:req.user.id}});
-   
+    await User.destroy({where :{id:id,datumId:req.user.id}},{transaction:t});
+   await t.commit();
     res.sendStatus(201);}
-    catch(err){console.log(err)}
+    catch(err){
+      await t.rollback();console.log(err)}
   }
 
   exports.getData=async(req,res,next)=>{
