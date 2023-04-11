@@ -84,6 +84,12 @@ function removeItem(e) {
 window.addEventListener("DOMContentLoaded",()=>{
     
     const token=localStorage.getItem('token')
+    const decodedToken=parseJwt(token);
+    console.log(decodedToken);
+    const admin=decodedToken.premium;
+    if(admin){
+        preminumUSer();
+    }
     axios
     .get("http://localhost:3001/user/getData",{headers:{'Authorization':token}})
 .then((res)=>{
@@ -129,15 +135,7 @@ document.getElementById('razorButton').onclick= async function(e){
                 payment_id:response.razorpay_payment_id,
             },{headers:{"Authorization":token}})
             alert('you are premium member now');
-            razorButton.style.visibility='hidden';
-            h3.innerHTML+='You are a premimum user now';
-var leader=document.createElement('input');
-leader.setAttribute("type","button");
-leader.setAttribute("value","Show Leaderboard")
-leader.className = 'btn btn-primary float-end show';
-leader.id="leader_id";
-h3.append(leader)
-
+            preminumUSer();
         }
     };
     const rzp=new Razorpay(options);
@@ -149,15 +147,15 @@ h3.append(leader)
         alert('something went wrong');
     })
 }
-
-//razorButton.style.visibility='hidden';
+function preminumUSer(){
+razorButton.style.visibility='hidden';
 h3.innerHTML+='You are a premimum user now';
 var leader=document.createElement('input');
 leader.setAttribute("type","button");
 leader.setAttribute("value","Show Leaderboard")
 leader.className = 'btn btn-primary float-end show';
 leader.id="leader_id";
-h3.append(leader)
+h3.append(leader)}
 
 
 
@@ -175,11 +173,22 @@ async function showBoard(e){
         {
         document.body.innerHTML+=`<li>Name ${details.name} total Expenses 0`;}
         else{
-            document.body.innerHTML+=`<li>Name ${details.name} total Expenses ${details.total}`;
+            document.body.innerHTML+=`<li>Name ${details.name} total Expenses ${details.totalExpense}`;
         }
       })
         
     }
+}
+
+
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
 }
 
 
