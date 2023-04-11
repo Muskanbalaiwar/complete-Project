@@ -56,30 +56,7 @@ function removeItem(e) {
     }
 }
 
-// function editItem(e) {
-//     if (e.target.classList.contains('edit')) {
-//         if (confirm('Are You sure?')) {
-//              var editingId = e.target.parentElement;
-//              console.log(editingId.id);
-//              axios
-//              .get(`http://localhost:3001/user/getData/${editingId.id}`)
-//              .then((res) =>{
-//                 console.log('data editing in process')
-//                 amount.value=res.data.details.amount,
-//                 disc.value=res.data.details.description,
-//                 catg.value=res.data.details.category
-//             })
-//                 .catch(err=>console.log(err))
 
-//                 axios
-//              .delete(`http://localhost:3001/user/deleteData/${editingId.id}`)
-//            // item = JSON.parse(localStorage.getItem(editingId));
-//             //console.log(editingId);
-//             .then(res=> itemList.removeChild(editingId))
-//         }
-//     }
-
-// }
 
 window.addEventListener("DOMContentLoaded",()=>{
     
@@ -155,7 +132,13 @@ leader.setAttribute("type","button");
 leader.setAttribute("value","Show Leaderboard")
 leader.className = 'btn btn-primary float-end show';
 leader.id="leader_id";
-h3.append(leader)}
+h3.append(leader);
+var download=document.createElement('input');
+download.setAttribute("type","button");
+download.setAttribute("value","DownloadFile")
+download.className = 'btn btn-primary float-end file';
+download.id="download_file"
+h3.append(download)}
 
 
 
@@ -177,6 +160,14 @@ async function showBoard(e){
         }
       })
         
+    }
+}
+
+h3.addEventListener('click',downloadExpense);
+
+async function downloadExpense(e){
+    if(e.target.classList.contains('file')){
+        console.log(1);
     }
 }
 
