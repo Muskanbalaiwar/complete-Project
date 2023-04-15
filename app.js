@@ -1,4 +1,9 @@
 const express = require('express');
+const helmet = require('helmet');
+const compression = require('compression');
+const morgan=require('morgan')
+const fs=require('fs'); 
+const path=require('path')
 const sign=require('./models/signData');
 const Expense=require('./models/user');
 const bodyParser = require('body-parser');
@@ -28,6 +33,10 @@ sign.hasMany(Order)
 Order.belongsTo(sign)
 sign.hasMany(password_table);
 password_table.belongsTo(sign);
+app.use(helmet());
+app.use(compression());
+const access=fs.createWriteStream(path.join(__dirname,'/','access.log'),{flags:'a'})
+app.use(morgan('combined', {stream:access}))
 sequelize.sync()
 .then(res=>{
     console.log('res');
