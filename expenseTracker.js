@@ -1,18 +1,19 @@
-//const Razorpay = require('razorpay');
 
+//const ReactPaginate=require('react-paginate');
 console.log(1);
 var form = document.getElementById('addValue');
 var itemList = document.getElementById('items');
 var amount = document.getElementById('amount');
 var h3=document.getElementById('h3');
+var pagination=document.getElementById('h5')
 var disc = document.getElementById('des');
 var catg = document.getElementById('cat');
+const currentPage = document.getElementById('current');
+const nextPage = document.getElementById('next');
+const previosPage = document.getElementById('previous');
 form.addEventListener('submit', addItem);
 itemList.addEventListener('click', removeItem);
-//itemList.addEventListener('click', editItem);
-
-
-
+window.addEventListener("DOMContentLoaded",load(0))
 function addItem(e) {
     e.preventDefault();
     console.log(1);
@@ -58,29 +59,27 @@ function removeItem(e) {
 
 
 
-window.addEventListener("DOMContentLoaded",()=>{
+
+ function load(page)
+ {
     
     const token=localStorage.getItem('token')
     const decodedToken=parseJwt(token);
-    console.log(decodedToken);
+    //console.log(decodedToken);
     const admin=decodedToken.premium;
     if(admin){
         preminumUSer();
     }
     axios
-    .get("http://localhost:3001/user/getData",{headers:{'Authorization':token}})
+    .get(`http://localhost:3001/user/getData/${page}`,{headers:{'Authorization':token}})
 .then((res)=>{
-    console.log('hello')
-    //console.log("res dtaa"+JSON.stringify(res.data.details));
     for(var i=0;i<res.data.details.length;i++){
-        //console.log("res dtaa"+JSON.stringify(res.data.details[i].id));
        showData(res.data.details[i])
     }
 })
 .catch(err=>console.log(err));
 
-
-})
+ }
 
 function showData(e){
     //e.preventDefault();
@@ -167,7 +166,11 @@ h3.addEventListener('click',downloadExpense);
 
 async function downloadExpense(e){
     if(e.target.classList.contains('file')){
-        console.log(1);
+        const response=await axios.get("http://localhost:3001/file/get",{headers:{"Authorization":token}})
+
+        if(response.status===201){
+            var a=document.createElement('a');
+        }
     }
 }
 
@@ -182,4 +185,23 @@ function parseJwt (token) {
     return JSON.parse(jsonPayload);
 }
 
+
+nextPage.addEventListener('click', () => {
+    previosPage.disabled=false;
+    console.log('next')
+    currentPage.innerText = `${parseInt(currentPage.innerText) + 1}`; 
+    var page=parseInt(currentPage.innerText)-1
+    load(page );
+
+})
+previosPage.addEventListener('click', () => {
+    if(currentPage.innerText==2){
+    previosPage.disabled=true;}
+    ;
+    console.log('prev')
+    currentPage.innerText = `${parseInt(currentPage.innerText) - 1}`;
+    var page=parseInt(currentPage.innerText)-1
+    load(page );
+    
+})
 

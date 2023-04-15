@@ -8,7 +8,7 @@ exports.postData=async(req,res,next)=>{
     const amount=req.body.amn;
     const des=req.body.dec;
     const category=req.body.crt;
-    const data=await User.create({amount:amount,description:des,category:category,datumId:req.user.id,},{transaction:t})
+    const data=await User.create({amount:amount,description:des,category:category,datumId:req.user.id},{transaction:t})
 const total=Number(req.user. totalExpense)+Number(amount);
     await sign.update({
       totalExpense: total
@@ -27,11 +27,17 @@ await t.commit();
 }
 
 exports.getAll=async(req,res,next)=>{
-try{console.log(~~parseInt(User.amount));
-  //const amount=req.body.amn;
-    const data=await User.findAll({where:{datumId:req.user.id}});
-    //console.log("data "+data)
-    res.status(201).json({details:data});}
+try{
+
+  console.log("req>>"+req.params)
+  const page=parseInt(req.params.page)?parseInt(req.params.page):0;
+  const size=1;
+
+  const skip=(page-1)*size;
+    const data=await User.findAll({where:{datumId:req.user.id},offset: page,
+      limit: size});
+   
+    res.status(201).json({details:data,page,size});}
 
     catch(err){console.log(err)}
 }
