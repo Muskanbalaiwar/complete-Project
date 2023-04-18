@@ -30,11 +30,11 @@ exports.getAll=async(req,res,next)=>{
 try{
 
   console.log("req>>"+req.params)
-  const page=parseInt(req.params.page)?parseInt(req.params.page):0;
-  const size=1;
+  const page=parseInt(req.params.page)?parseInt(req.params.page):1;
+  const size=parseInt(req.params.limit)?parseInt(req.params.limit):1;
 
   const skip=(page-1)*size;
-    const data=await User.findAll({where:{datumId:req.user.id},offset: page,
+    const data=await User.findAll({where:{datumId:req.user.id},offset: skip+1,
       limit: size});
    
     res.status(201).json({details:data,page,size});}

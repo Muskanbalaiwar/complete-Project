@@ -11,8 +11,9 @@ var catg = document.getElementById('cat');
 const currentPage = document.getElementById('current');
 const nextPage = document.getElementById('next');
 const previosPage = document.getElementById('previous');
+const inputPage=document.getElementById('itemsPerPage');
 form.addEventListener('submit', addItem);
-itemList.addEventListener('click', removeItem);
+
 window.addEventListener("DOMContentLoaded",load(0))
 function addItem(e) {
     e.preventDefault();
@@ -65,15 +66,16 @@ function removeItem(e) {
     
     const token=localStorage.getItem('token')
     const decodedToken=parseJwt(token);
+    const limit=localStorage.getItem('ItemPerPage')?localStorage.getItem('ItemPerPage'):2;
     //console.log(decodedToken);
     const admin=decodedToken.premium;
     if(admin){
         preminumUSer();
     }
     axios
-    .get(`http://localhost:3001/user/getData/${page}`,{headers:{'Authorization':token}})
+    .get(`http://localhost:3001/user/getData/${page}/${limit}`,{headers:{'Authorization':token}})
 .then((res)=>{
-    for(var i=0;i<res.data.details.length;i++){
+    for(var i=0;i<limit;i++){
        showData(res.data.details[i])
     }
 })
@@ -187,21 +189,32 @@ function parseJwt (token) {
 
 
 nextPage.addEventListener('click', () => {
+h3.innerHTML=''
+itemList.innerHTML=''
     previosPage.disabled=false;
     console.log('next')
     currentPage.innerText = `${parseInt(currentPage.innerText) + 1}`; 
-    var page=parseInt(currentPage.innerText)-1
+    var page=parseInt(currentPage.innerText)
     load(page );
 
 })
 previosPage.addEventListener('click', () => {
+    h3.innerHTML=''
+itemList.innerHTML=''
     if(currentPage.innerText==2){
     previosPage.disabled=true;}
     ;
     console.log('prev')
     currentPage.innerText = `${parseInt(currentPage.innerText) - 1}`;
-    var page=parseInt(currentPage.innerText)-1
+    var page=parseInt(currentPage.innerText)
     load(page );
     
+})
+
+
+inputPage.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    let val = document.getElementById('inputperpage').value;
+    localStorage.setItem('ItemPerPage', val);
 })
 
