@@ -19,7 +19,9 @@ const route_order=require('./routes/purchase')
 const route_leaderboard=require('./routes/leaderboard')
 const route_password=require('./routes/password');
 const password_table=require('./models/password')
+const file_Table=require('./models/fileLink')
 const reset_route=require('./routes/reset')
+const report_route=require('./routes/report')
 app.use(bodyParser.json())
 app.use(router);
 app.use(route);
@@ -29,10 +31,13 @@ Expense.belongsTo(sign);
 app.use(route_order)
 app.use(route_leaderboard)
 app.use(route_password)
+app.use(report_route)
 sign.hasMany(Order)
 Order.belongsTo(sign)
 sign.hasMany(password_table);
 password_table.belongsTo(sign);
+sign.hasMany(file_Table);
+file_Table.belongsTo(sign)
 app.use(helmet());
 app.use(compression());
 const access=fs.createWriteStream(path.join(__dirname,'/','access.log'),{flags:'a'})

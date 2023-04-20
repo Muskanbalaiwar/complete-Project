@@ -75,7 +75,7 @@ function removeItem(e) {
     axios
     .get(`http://localhost:3001/user/getData/${page}/${limit}`,{headers:{'Authorization':token}})
 .then((res)=>{
-    for(var i=0;i<limit;i++){
+    for(var i=0;i<res.data.details.length;i++){
        showData(res.data.details[i])
     }
 })
@@ -166,15 +166,32 @@ async function showBoard(e){
 
 h3.addEventListener('click',downloadExpense);
 
-async function downloadExpense(e){
+ async function downloadExpense(e){
+   try{
+    const token=localStorage.getItem('token');
+    //console.log(token)
     if(e.target.classList.contains('file')){
-        const response=await axios.get("http://localhost:3001/file/get",{headers:{"Authorization":token}})
-
-        if(response.status===201){
-            var a=document.createElement('a');
+     const response=await axios.get('http://localhost:3001/file/get', { headers: {"Authorization" : token} })
+    console.log(response)
+        if(response.status === 200){
+            //the bcakend is essentially sending a download link
+            //  which if we open in browser, the file would download
+            var a = document.createElement("a");
+            a.href = response.data.fileUrl;
+            a.download = 'myexpense.csv';
+            a.click();
+        } else {
+            throw new Error(response.data)
         }
-    }
+    }}
+
+    catch(err) {
+        console.log(err)
+    }   
+    
+       
 }
+
 
 
 function parseJwt (token) {
@@ -201,7 +218,7 @@ itemList.innerHTML=''
 previosPage.addEventListener('click', () => {
     h3.innerHTML=''
 itemList.innerHTML=''
-    if(currentPage.innerText==2){
+    if(currentPage.innerText==1){
     previosPage.disabled=true;}
     ;
     console.log('prev')
